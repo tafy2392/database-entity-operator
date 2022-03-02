@@ -67,7 +67,7 @@ jobs:
         run: |
           apt-get update
           apt-get -y install sudo
-          apt-get install iptables
+          apt-get -y install iptables
       - name: copy kubeconfig
         run: |
           mkdir -p ~/.kube
