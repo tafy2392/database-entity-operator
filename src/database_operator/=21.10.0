@@ -1,0 +1,8 @@
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: pykube-ng in /home/munya/.local/lib/python3.7/site-packages (21.3.0)
+Requirement already satisfied: requests>=2.12 in /home/munya/.local/lib/python3.7/site-packages (from pykube-ng) (2.25.1)
+Requirement already satisfied: pyyaml in /home/munya/.local/lib/python3.7/site-packages (from pykube-ng) (5.4.1)
+Requirement already satisfied: urllib3<1.27,>=1.21.1 in /home/munya/.local/lib/python3.7/site-packages (from requests>=2.12->pykube-ng) (1.26.5)
+Requirement already satisfied: idna<3,>=2.5 in /home/munya/.local/lib/python3.7/site-packages (from requests>=2.12->pykube-ng) (2.10)
+Requirement already satisfied: certifi>=2017.4.17 in /home/munya/.local/lib/python3.7/site-packages (from requests>=2.12->pykube-ng) (2021.5.30)
+Requirement already satisfied: chardet<5,>=3.0.2 in /home/munya/.local/lib/python3.7/site-packages (from requests>=2.12->pykube-ng) (4.0.0)

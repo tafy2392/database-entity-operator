@@ -1,0 +1,7 @@
+attrs
+kopf == 1.35.3
+pykube-ng >= 20.10.0
+asyncio >= 3.4.3
+asyncpg >= 0.25.0
+tox
+types-PyYAML
