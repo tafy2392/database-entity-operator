@@ -40,12 +40,6 @@ jobs:
       fail-fast: false
       matrix:
         kubernetes_version: ['1.19.6']
-
-    # runs all of the steps inside the specified container rather than on the VM host.
-    # Because of this the network configuration changes from host based network to a container network.
-    container:
-      image:  ubuntu:focal
-
     services:
       postgres:
         image: postgres
@@ -60,18 +54,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-        - 5432:5432
+        - 5432/tcp
     steps:
       - uses: actions/checkout@v2
-      - name: run docker
-        run: |
-          apt-get update
-          apt-get -y install sudo
-          apt-get -y install iptables
-      - name: copy kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          cp .ci/kubeconfig.yaml ~/.kube/config
       - name: setup minikube
         id: minikube
         uses: manusa/actions-setup-minikube@v2.4.3
@@ -82,7 +67,7 @@ jobs:
         run: |
           kubectl apply -f postgres_crd.yaml
           kubectl apply -f postgresuser_crd.yaml
-      - name: setup py38
+      - name: setup py37
         uses: actions/setup-python@v3
         with:
           python-version: "3.8"
@@ -92,10 +77,12 @@ jobs:
           python -m pip install -r requirements.txt
       - name: run kopf tests
         env:
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: "127.0.0.1"
           POSTGRES_DEFAULT_DATABASE: postgres
           POSTGRES_PASS: somePassword
           POSTGRES_USER: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: |
-          tox -e e2e
+          apt-get update
+          apt-get -y install postgresql-client
+          psql postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/{POSTGRES_DEFAULT_DATABASE} -c 'CREATE DATABASE rudo'
