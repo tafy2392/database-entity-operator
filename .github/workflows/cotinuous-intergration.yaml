@@ -63,6 +63,10 @@ jobs:
         - 5432:5432
     steps:
       - uses: actions/checkout@v2
+      - name: run docker
+        run: |
+          apt-get update
+          apt-get -y install sudo
       - name: copy kubeconfig
         run: |
           mkdir -p ~/.kube
