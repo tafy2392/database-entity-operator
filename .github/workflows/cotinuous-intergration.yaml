@@ -57,6 +57,16 @@ jobs:
         - 5432/tcp
     steps:
       - uses: actions/checkout@v2
+      - name: run kopf tests
+        env:
+          POSTGRES_HOST: "127.0.0.1"
+          POSTGRES_DEFAULT_DATABASE: postgres
+          POSTGRES_PASS: somePassword
+          POSTGRES_USER: postgres
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+        run: |
+          apt-get update
+          apt-get -y install postgresql-client
       - name: setup minikube
         id: minikube
         uses: manusa/actions-setup-minikube@v2.4.3
@@ -75,16 +85,6 @@ jobs:
         run: |
           python -m pip install -U pip
           python -m pip install -r requirements.txt
-      - name: run kopf tests
-        env:
-          POSTGRES_HOST: "127.0.0.1"
-          POSTGRES_DEFAULT_DATABASE: postgres
-          POSTGRES_PASS: somePassword
-          POSTGRES_USER: postgres
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
-        run: |
-          apt-get update
-          apt-get -y install postgresql-client
       - name: timomo
         env:
           POSTGRES_HOST: "127.0.0.1"
