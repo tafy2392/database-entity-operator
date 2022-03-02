@@ -86,7 +86,7 @@ jobs:
           python -m pip install -r requirements.txt
       - name: timomo
         env:
-          POSTGRES_HOST: localhost
+          POSTGRES_HOST: "127.0.0.1"
           POSTGRES_DEFAULT_DATABASE: postgres
           POSTGRES_PASS: somePassword
           POSTGRES_USER: postgres
