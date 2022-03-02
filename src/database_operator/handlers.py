@@ -8,7 +8,7 @@ import asyncio  # type: ignore
 import kopf  # type: ignore
 import pykube  # type: ignore
 
-from databases import Database
+from .databases import Database
 
 API_GROUP = "dboperator.p16n.org"
 API_VERSION = "v1"
