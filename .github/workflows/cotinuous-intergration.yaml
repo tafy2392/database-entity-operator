@@ -65,7 +65,6 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: |
-          apt-get update
           apt-get -y install postgresql-client
       - name: setup minikube
         id: minikube
