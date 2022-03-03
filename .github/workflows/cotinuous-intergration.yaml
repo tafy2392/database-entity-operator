@@ -62,16 +62,6 @@ jobs:
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: |
           sudo apt-get -y install postgresql-client
-      - name: setup minikube
-        id: minikube
-        uses: manusa/actions-setup-minikube@v2.4.3
-        with:
-          minikube version: v1.25.1
-          kubernetes version: v${{ matrix.kubernetes_version }}
-      - name: apply crd
-        run: |
-          kubectl apply -f postgres_crd.yaml
-          kubectl apply -f postgresuser_crd.yaml
       - name: setup py37
         uses: actions/setup-python@v3
         with:
