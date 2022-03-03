@@ -66,6 +66,7 @@ jobs:
           apt-get -y install sudo gpg
           apt install systemctl  -y
           apt install lsb-release -y
+          apt install software-properties-common -y
       - uses: docker-practice/actions-setup-docker@1.0.2
       - name: tanya
         run: |
