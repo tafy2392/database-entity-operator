@@ -52,7 +52,7 @@ jobs:
         ports:
         - 5432/tcp
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: run kopf tests
         env:
           POSTGRES_HOST: "127.0.0.1"
@@ -65,7 +65,7 @@ jobs:
       - uses: engineerd/setup-kind@v0.5.0
         with:
           image: ${{ matrix.image_version }}
-          wait: 100s
+          wait: 200s
       - name: Testing
         run: |
           kubectl apply -f postgres_crd.yaml
