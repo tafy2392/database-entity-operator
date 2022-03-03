@@ -66,7 +66,7 @@ jobs:
           apt-get -y install sudo gpg
           apt install systemctl  -y
           apt install lsb-release -y
-      - uses: docker-practice/actions-setup-docker@1.0.8
+      - uses: docker-practice/actions-setup-docker@1.0.2
       - name: tanya
         run: |
           set -x
