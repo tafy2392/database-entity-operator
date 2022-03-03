@@ -64,6 +64,7 @@ jobs:
           apt-get update
           apt-get -y install curl
           apt-get -y install sudo gpg
+          apt install systemctl
       - uses: docker-practice/actions-setup-docker@master
       - name: tanya
         run: |
