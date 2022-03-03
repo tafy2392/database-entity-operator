@@ -65,7 +65,6 @@ jobs:
       - uses: engineerd/setup-kind@v0.5.0
         with:
           image: ${{ matrix.image_version }}
-          wait: 200s
       - name: Testing
         run: |
           kubectl apply -f postgres_crd.yaml
