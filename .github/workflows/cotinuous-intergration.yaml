@@ -59,6 +59,10 @@ jobs:
         - 5432:5432
     steps:
       - uses: actions/checkout@v2
+      - name: instal
+        run: |
+          apt-get update
+          apt-get -y install curl
       - uses: docker-practice/actions-setup-docker@master
       - name: tanya
         run: |
