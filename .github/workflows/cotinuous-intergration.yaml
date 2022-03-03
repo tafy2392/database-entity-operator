@@ -42,7 +42,7 @@ jobs:
         kubernetes_version: ['1.19.6']
     services:
       postgres:
-        image: postgres
+        image:  postgres:10.8
         env:
           POSTGRES_PASSWORD: somePassword
           POSTGRES_DB: postgres
