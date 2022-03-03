@@ -37,7 +37,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kubernetes_version: ['1.19.6']
+        image_version:
+        - kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6
+        - kindest/node:v1.22.0@sha256:b8bda84bb3a190e6e028b1760d277454a72267a5454b57db34437c34a588d047
     services:
       postgres:
         image:  postgres:10.8
@@ -61,6 +63,9 @@ jobs:
         run: |
           sudo apt-get -y install postgresql-client
       - uses: engineerd/setup-kind@v0.5.0
+        with:
+          image: ${{ matrix.image_version }}
+          wait: 100s
       - name: Testing
         run: |
           kubectl apply -f postgres_crd.yaml
@@ -82,12 +87,3 @@ jobs:
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: |
           tox -e e2e
-      - name: timomo
-        env:
-          POSTGRES_HOST: "127.0.0.1"
-          POSTGRES_DEFAULT_DATABASE: postgres
-          POSTGRES_PASS: somePassword
-          POSTGRES_USER: postgres
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
-        run: |
-          psql postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DEFAULT_DATABASE} -c 'CREATE DATABASE rudo;'
