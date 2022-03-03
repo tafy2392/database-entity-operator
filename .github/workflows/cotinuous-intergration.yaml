@@ -56,7 +56,7 @@ jobs:
         ports:
         - 5432:5432
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
       - name: run kopf tests
         env:
           POSTGRES_HOST: "127.0.0.1"
