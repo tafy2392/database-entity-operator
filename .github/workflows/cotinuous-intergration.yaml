@@ -48,13 +48,9 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
         # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options:  --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
         ports:
-        - 5432:5432
+        - 5432/tcp
     steps:
       - uses: actions/checkout@v1
       - name: run kopf tests
@@ -73,6 +69,7 @@ jobs:
           minikube version: v1.25.1
           kubernetes version: v${{ matrix.kubernetes_version }}
       - name: apply crd
+        working-directory: ./postgres
         run: |
           kubectl apply -f postgres_crd.yaml
           kubectl apply -f postgresuser_crd.yaml
@@ -85,6 +82,7 @@ jobs:
           python -m pip install -U pip
           python -m pip install -r requirements.txt
       - name: timomo
+        working-directory: ./postgres
         env:
           POSTGRES_HOST: "127.0.0.1"
           POSTGRES_DEFAULT_DATABASE: postgres
