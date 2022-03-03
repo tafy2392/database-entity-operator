@@ -78,4 +78,4 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: |
-          psql postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/{POSTGRES_DEFAULT_DATABASE} -c 'CREATE DATABASE rudo;'
+          psql postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DEFAULT_DATABASE} -c 'CREATE DATABASE rudo;'
