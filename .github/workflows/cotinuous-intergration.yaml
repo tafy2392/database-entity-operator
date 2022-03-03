@@ -59,6 +59,10 @@ jobs:
         - 5432:5432
     steps:
       - uses: actions/checkout@v2
+      - uses: docker-practice/actions-setup-docker@master
+        run: |
+          set -x
+          docker version
       - uses: engineerd/setup-kind@v0.5.0
       - name: Testing
         run: |
