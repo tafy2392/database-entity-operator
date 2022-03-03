@@ -63,7 +63,7 @@ jobs:
         run: |
           apt-get update
           apt-get -y install curl
-          apt-get -y install sudo
+          apt-get -y install sudo gpg
       - uses: docker-practice/actions-setup-docker@master
       - name: tanya
         run: |
