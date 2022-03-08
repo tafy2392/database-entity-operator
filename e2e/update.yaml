@@ -1,0 +1,12 @@
+apiVersion: dboperator.p16n.org/v1
+kind: Postgres
+metadata:
+  name: my-db
+  namespace: default
+spec:
+  database: test
+  dropOnDelete: true
+  schemas:
+  - ruru
+  extensions:
+  - hstore

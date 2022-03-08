@@ -14,6 +14,11 @@ EXTENSIONS_CREATED = "Successfully created extensions ('hstore',) in database te
 SUCCESSFUL_DROP = "Successfully dropped database test"
 NO_DROP = "Database testfalse will not be dropped"
 DATABASE_EXISTS = 'Error info: database "test" already exists'
+UPDATED_SCHEMAS = "Successfully created schemas ('app',) in database test"
+UPDATED_EXTENSIONS = "Successfully created extensions ('pg_stat_statements',) in database test"
+REMOVED_SCHEMAS = "Successfully removed schemas ('ruru',) from database test"
+REMOVED_EXTENSIONS = "Successfully removed extensions ('hstore',) from database test"
+
 
 @pytest.fixture
 def kube():
@@ -80,3 +85,21 @@ def test_database_create_with_the_same_database_name(caplog, kube):
         wait_for_log(start_time, caplog, DATABASE_EXISTS)
         kube.delete_yaml("e2e/testdatabase.yaml")
         kube.delete_yaml("e2e/testdatabasesame.yaml")
+
+
+def test_update(caplog, kube):
+    """
+    Test update of extensions and schemas
+    """
+    start_time = time.monotonic()
+    with kopf_runner():
+        kube.apply_yaml("e2e/update.yaml")
+        wait_for_log(start_time, caplog, LOG_ESTABLISH)
+        wait_for_log(start_time, caplog, SCHEMAS_CREATED)
+        wait_for_log(start_time, caplog, EXTENSIONS_CREATED)
+        kube.apply_yaml("e2e/updatefirst.yaml")
+        wait_for_log(start_time, caplog, UPDATED_SCHEMAS)
+        wait_for_log(start_time, caplog, UPDATED_EXTENSIONS)
+        wait_for_log(start_time, caplog, REMOVED_SCHEMAS)
+        wait_for_log(start_time, caplog, REMOVED_EXTENSIONS)
+        kube.delete_yaml("e2e/updatefirst.yaml")
