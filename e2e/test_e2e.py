@@ -12,7 +12,7 @@ DATABASE_CREATED = "Database test created"
 SCHEMAS_CREATED =  "Successfully created schemas ('ruru',) in database test"
 EXTENSIONS_CREATED = "Successfully created extensions ('hstore',) in database test"
 SUCCESSFUL_DROP = "Successfully dropped database test"
-
+NO_DROP = "Database testfalse will not be dropped"
 
 @pytest.fixture
 def kube():
@@ -36,7 +36,10 @@ def wait_for_log(start_time, caplog, msg, skip=0):
                 return
 
 
-def test_create_and_cleanup(caplog, kube):
+def test_database_create_and_cleanup(caplog, kube):
+    """
+    Test with a CR where dropOnDelete is true
+    """
     start_time = time.monotonic()
     with kopf_runner():
         kube.apply_yaml("e2e/testdatabase.yaml")
@@ -47,3 +50,16 @@ def test_create_and_cleanup(caplog, kube):
         wait_for_log(start_time, caplog, LOG_ESTABLISH)
         wait_for_log(start_time, caplog, SUCCESSFUL_DROP)
 
+
+def test_database_create_and_cleanup_with_false(caplog, kube):
+    """
+    Test with a CR where dropOnDelete is false
+    """
+    start_time = time.monotonic()
+    with kopf_runner():
+        kube.apply_yaml("e2e/testdatabasefalse.yaml")
+        wait_for_log(start_time, caplog, LOG_ESTABLISH)
+        wait_for_log(start_time, caplog, SCHEMAS_CREATED)
+        wait_for_log(start_time, caplog, EXTENSIONS_CREATED)
+        kube.delete_yaml("e2e/testdatabasefalse.yaml")
+        wait_for_log(start_time, caplog, NO_DROP)
