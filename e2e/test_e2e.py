@@ -8,6 +8,11 @@ from .helpers import kopf_runner, kube_helper
 
 TIMEOUT_SECS = 240
 LOG_ESTABLISH = "Successfully established connection to database postgres"
+DATABASE_CREATED = "Database test created"
+SCHEMAS_CREATED =  "Successfully created schemas ('ruru',) in database test"
+EXTENSIONS_CREATED = "Successfully created extensions ('hstore',) in database test"
+SUCCESSFUL_DROP = "Successfully dropped database test"
+
 
 @pytest.fixture
 def kube():
@@ -36,3 +41,9 @@ def test_create_and_cleanup(caplog, kube):
     with kopf_runner():
         kube.apply_yaml("e2e/testdatabase.yaml")
         wait_for_log(start_time, caplog, LOG_ESTABLISH)
+        wait_for_log(start_time, caplog, SCHEMAS_CREATED)
+        wait_for_log(start_time, caplog, EXTENSIONS_CREATED)
+        kube.delete_yaml("e2e/testdatabase.yaml")
+        wait_for_log(start_time, caplog, LOG_ESTABLISH)
+        wait_for_log(start_time, caplog, SUCCESSFUL_DROP)
+
