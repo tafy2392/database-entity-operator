@@ -4,11 +4,12 @@ A k8s operator for creating databases and their associated roles, extensions
 from __future__ import annotations
 
 import asyncio  # type: ignore
+import os
 
 import kopf  # type: ignore
 import pykube  # type: ignore
 
-from .databases import Database
+from .databases import Database, PostgresConnection
 
 API_GROUP = "dboperator.p16n.org"
 API_VERSION = "v1"
@@ -18,6 +19,7 @@ LOG_NOT_ALLOWED = (
 )
 # Global pykube client for managing resources in event handlers.
 _kapi = None
+master_conn = None
 
 
 async def _create_pykube_postgres():
@@ -43,6 +45,28 @@ async def filter_on_postgres_update(old, new):
     return added, dropped
 
 
+@kopf.on.startup(errors=kopf.ErrorsMode.PERMANENT)
+async def startup(**kwargs):
+    """
+    Initialise database connections
+    """
+    POSTGRES_DEFAULT_DATABASE = os.getenv(
+        "POSTGRES_DEFAULT_DATABASE", "postgres"
+    )
+    MASTER_POSTGRES_PASS = os.getenv("POSTGRES_PASS", "somePassword")
+    POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+    MASTER_POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)
+    global master_conn
+    master_conn = PostgresConnection(
+        MASTER_POSTGRES_USER,
+        MASTER_POSTGRES_PASS,
+        POSTGRES_HOST,
+        POSTGRES_PORT,
+        POSTGRES_DEFAULT_DATABASE,
+    )
+
+
 @kopf.on.login(errors=kopf.ErrorsMode.PERMANENT)
 async def login_with_pykube(**kwargs):
     """
@@ -59,7 +83,9 @@ async def login_with_pykube(**kwargs):
 @kopf.on.create(API_GROUP, API_VERSION, "postgres")
 async def create_fn(spec, logger=None, **kwargs):
     cpd = await Database.from_spec(spec)
-    await cpd.create_database(logger)
+    master_conn_obj = master_conn.master_connection()
+    database_conn_obj = master_conn.database_connection(cpd.database_name)
+    await cpd.create_database(logger, master_conn_obj, database_conn_obj)
 
 
 @kopf.on.delete(API_GROUP, API_VERSION, "postgres")
@@ -70,7 +96,8 @@ async def deleted(spec, logger, **kwargs):
     """
     cpd = await Database.from_spec(spec)
     if cpd.drop_database:
-        await cpd.delete_database(logger)
+        master_conn_obj = master_conn.master_connection()
+        await cpd.delete_database(logger, master_conn_obj)
     if not cpd.drop_database:
         logger.warning(f"Database {cpd.database_name} will not be dropped")
 
@@ -97,6 +124,14 @@ async def on_spec_data(old, new, name, logger=None, **kwargs):
                 (new_ext, dropped_ext),
                 (new_schemas, dropped_schemas),
             ] = await asyncio.gather(*tasks)
+            database_conn_obj = master_conn.database_connection(
+                obj_old.database_name
+            )
             await obj_new.update_database(
-                new_ext, dropped_ext, new_schemas, dropped_schemas, logger
+                new_ext,
+                dropped_ext,
+                new_schemas,
+                dropped_schemas,
+                logger,
+                database_conn_obj,
             )
