@@ -11,11 +11,11 @@ SUCCESSFUL_REMOVE = "Successfully removed {} {} from database {}"
 
 
 def add_creation(x, y):
-    return f"CREATE {y} IF NOT EXISTS {x}"
+    return f'CREATE {y} IF NOT EXISTS "{x}"'
 
 
 def drop_items(x, y):
-    return f"DROP {y} IF EXISTS {x}"
+    return f'DROP {y} IF EXISTS "{x}"'
 
 
 def construct_items_map(items, postgres_construct, log_stat):
@@ -89,22 +89,27 @@ class Database:
                 logger.info(LOG_ESTABLISH.format("postgres"))
                 await conn.execute(f'CREATE DATABASE "{self.database_name}"')
                 logger.info(f"Database {self.database_name} created")
+            try:
+                async with database_obj as conn:
+                    logger.info(LOG_ESTABLISH.format(self.database_name))
+                    for x, y in {
+                        **NEW_SCHEMA_MAP,
+                        **NEW_EXTENSION_MAP,
+                    }.items():
+                        if x:
+                            [
+                                await conn.execute(add_creation(item, y[0]))
+                                for item in x
+                            ]
+                            logger.info(
+                                LOG_SUCCESSFUL.format(
+                                    y[1], x, self.database_name
+                                )
+                            )
+            except Exception as e:
+                logger.error(f"Error info {e}")
         except Exception as e:
             logger.info(f"Error info: {e}")
-        try:
-            async with database_obj as conn:
-                logger.info(LOG_ESTABLISH.format(self.database_name))
-                for x, y in {**NEW_SCHEMA_MAP, **NEW_EXTENSION_MAP}.items():
-                    if x:
-                        [
-                            await conn.execute(add_creation(item, y[0]))
-                            for item in x
-                        ]
-                        logger.info(
-                            LOG_SUCCESSFUL.format(y[1], x, self.database_name)
-                        )
-        except Exception as e:
-            logger.error(f"Error info {e}")
 
     @asyncio.coroutine
     async def delete_database(self, logger, master_obj):
