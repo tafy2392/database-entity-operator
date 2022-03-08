@@ -1,23 +1,30 @@
 # To get nicer type annotations in Python 3.7 and 3.8.
 from __future__ import annotations
 
-import pytest  # type: ignore
 import time
+
+import pytest  # type: ignore
 
 from .helpers import kopf_runner, kube_helper
 
 TIMEOUT_SECS = 240
 LOG_ESTABLISH = "Successfully established connection to database postgres"
 DATABASE_CREATED = "Database test created"
-SCHEMAS_CREATED =  "Successfully created schemas ('ruru',) in database test"
-EXTENSIONS_CREATED = "Successfully created extensions ('hstore',) in database test"
+SCHEMAS_CREATED = "Successfully created schemas ('ruru',) in database test"
+EXTENSIONS_CREATED = (
+    "Successfully created extensions ('hstore',) in database test"
+)
 SUCCESSFUL_DROP = "Successfully dropped database test"
 NO_DROP = "Database testfalse will not be dropped"
 DATABASE_EXISTS = 'Error info: database "test" already exists'
 UPDATED_SCHEMAS = "Successfully created schemas ('app',) in database test"
-UPDATED_EXTENSIONS = "Successfully created extensions ('pg_stat_statements',) in database test"
+UPDATED_EXTENSIONS = (
+    "Successfully created extensions ('pg_stat_statements',) in database test"
+)
 REMOVED_SCHEMAS = "Successfully removed schemas ('ruru',) from database test"
-REMOVED_EXTENSIONS = "Successfully removed extensions ('hstore',) from database test"
+REMOVED_EXTENSIONS = (
+    "Successfully removed extensions ('hstore',) from database test"
+)
 
 
 @pytest.fixture

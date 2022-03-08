@@ -16,7 +16,7 @@ lint() {
     return $failed
 }
 
-lint src/database_operator/ setup.py tests/
+lint src/database_operator/ setup.py tests/ e2e/
 result=$?
 
 if [ $result = 0 ]; then
