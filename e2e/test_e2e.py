@@ -13,6 +13,7 @@ SCHEMAS_CREATED =  "Successfully created schemas ('ruru',) in database test"
 EXTENSIONS_CREATED = "Successfully created extensions ('hstore',) in database test"
 SUCCESSFUL_DROP = "Successfully dropped database test"
 NO_DROP = "Database testfalse will not be dropped"
+DATABASE_EXISTS = 'Error info: database "test" already exists'
 
 @pytest.fixture
 def kube():
@@ -63,3 +64,19 @@ def test_database_create_and_cleanup_with_false(caplog, kube):
         wait_for_log(start_time, caplog, EXTENSIONS_CREATED)
         kube.delete_yaml("e2e/testdatabasefalse.yaml")
         wait_for_log(start_time, caplog, NO_DROP)
+
+
+def test_database_create_with_the_same_database_name(caplog, kube):
+    """
+    Test two CRs with the same db name
+    """
+    start_time = time.monotonic()
+    with kopf_runner():
+        kube.apply_yaml("e2e/testdatabase.yaml")
+        wait_for_log(start_time, caplog, LOG_ESTABLISH)
+        wait_for_log(start_time, caplog, SCHEMAS_CREATED)
+        wait_for_log(start_time, caplog, EXTENSIONS_CREATED)
+        kube.apply_yaml("e2e/testdatabasesame.yaml")
+        wait_for_log(start_time, caplog, DATABASE_EXISTS)
+        kube.delete_yaml("e2e/testdatabase.yaml")
+        kube.delete_yaml("e2e/testdatabasesame.yaml")
