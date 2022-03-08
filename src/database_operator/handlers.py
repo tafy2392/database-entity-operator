@@ -8,7 +8,8 @@ import os
 
 import kopf  # type: ignore
 import pykube  # type: ignore
-from databases import Database, PostgresConnection
+
+from .databases import Database, PostgresConnection
 
 API_GROUP = "dboperator.p16n.org"
 API_VERSION = "v1"
