@@ -86,7 +86,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PORT: '31000'
         run: |
-          while [[ $(kubectl get pods -l app=postgres -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+          kubectl wait pods -l app=postgres --for condition=Ready
           kubectl describe svc postgres
           psql postgresql://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DEFAULT_DATABASE} -c "CREATE DATABASE reda;"
       - name: setup py37
