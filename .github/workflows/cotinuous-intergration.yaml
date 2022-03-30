@@ -37,21 +37,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kubernetes_version:
-        - '1.19.6'
-        - '1.20.1'
+        image_version:
+        - "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
+        - "kindest/node:v1.22.0@sha256:b8bda84bb3a190e6e028b1760d277454a72267a5454b57db34437c34a588d047"
     steps:
       - uses: actions/checkout@v2
       - name: run kopf tests
         run: |
           sudo apt-get -y install postgresql-client
           sudo apt-get install -y netcat
-      - name: setup minikube
-        id: minikube
-        uses: manusa/actions-setup-minikube@v2.3.0
+      - uses: engineerd/setup-kind@v0.5.0
         with:
-          minikube version: v1.15.1
-          kubernetes version: v${{ matrix.kubernetes_version }}
+          version: "v0.11.1"
+          image: ${{ matrix.image_version }}
+          config: .ci/config.yaml
       - name: ruru
         run: |
           kubectl cluster-info
