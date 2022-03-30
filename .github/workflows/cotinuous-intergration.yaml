@@ -66,6 +66,12 @@ jobs:
         with:
           version: "v0.11.1"
           image: ${{ matrix.image_version }}
+       - name: ruru
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Testing
         run: |
           kubectl apply -f .ci/kubeconfig.yaml
