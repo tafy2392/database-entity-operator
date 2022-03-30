@@ -19,7 +19,6 @@ LOG_NOT_ALLOWED = (
 )
 # Global pykube client for managing resources in event handlers.
 _kapi = None
-master_conn = None
 
 
 async def _create_pykube_postgres():
@@ -82,10 +81,10 @@ async def login_with_pykube(**kwargs):
 @kopf.on.resume(API_GROUP, API_VERSION, "postgres")
 @kopf.on.create(API_GROUP, API_VERSION, "postgres")
 async def create_fn(spec, logger=None, **kwargs):
-    cpd = await Database.from_spec(spec)
-    master_conn_obj = master_conn.master_connection()
-    database_conn_obj = master_conn.database_connection(cpd.database_name)
-    await cpd.create_database(logger, master_conn_obj, database_conn_obj)
+    cpd = await Database.from_spec(spec, master_conn)
+    await cpd.create_database(
+        logger,
+    )
 
 
 @kopf.on.delete(API_GROUP, API_VERSION, "postgres")
@@ -94,10 +93,11 @@ async def deleted(spec, logger, **kwargs):
     Handle the deletion of a postgres CR.
     If dropOnDelete is set to false prevent the deletion of a CR
     """
-    cpd = await Database.from_spec(spec)
+    cpd = await Database.from_spec(spec, master_conn)
     if cpd.drop_database:
-        master_conn_obj = master_conn.master_connection()
-        await cpd.delete_database(logger, master_conn_obj)
+        await cpd.delete_database(
+            logger,
+        )
     if not cpd.drop_database:
         logger.warning(f"Database {cpd.database_name} will not be dropped")
 
@@ -111,11 +111,12 @@ async def on_spec_data(old, new, name, logger=None, **kwargs):
     """
     logger.warning(f"Data changed: {old} -> {new}")
     if old is not None:
-        specs_obj = Database.from_spec(new), Database.from_spec(old)
+        specs_obj = Database.from_spec(new, master_conn), Database.from_spec(
+            old, master_conn
+        )
         [obj_new, obj_old] = await asyncio.gather(*specs_obj)
         if obj_new.database_name != obj_old.database_name:
             logger.error(LOG_NOT_ALLOWED.format(name))
-            raise kopf.PermanentError("Not allowed to change db name.")
         else:
             tasks = filter_on_postgres_update(
                 obj_old.extensions, obj_new.extensions
@@ -124,14 +125,10 @@ async def on_spec_data(old, new, name, logger=None, **kwargs):
                 (new_ext, dropped_ext),
                 (new_schemas, dropped_schemas),
             ] = await asyncio.gather(*tasks)
-            database_conn_obj = master_conn.database_connection(
-                obj_old.database_name
-            )
             await obj_new.update_database(
                 new_ext,
                 dropped_ext,
                 new_schemas,
                 dropped_schemas,
                 logger,
-                database_conn_obj,
             )
