@@ -66,6 +66,7 @@ jobs:
         with:
           version: "v0.11.1"
           image: ${{ matrix.image_version }}
+          config: .ci/config.yaml
       - name: ruru
         run: |
           kubectl cluster-info
