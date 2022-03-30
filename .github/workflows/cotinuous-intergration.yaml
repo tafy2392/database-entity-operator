@@ -45,6 +45,7 @@ jobs:
       - name: run kopf tests
         run: |
           sudo apt-get -y install postgresql-client
+          sudo apt-get install -y netcat
       - name: setup minikube
         id: minikube
         uses: manusa/actions-setup-minikube@v2.3.0
@@ -72,6 +73,9 @@ jobs:
         run: |
           kubectl wait pods -l app=postgres --for condition=Ready
           kubectl describe svc postgres
+          while ! nc -z 127.0.0.1 31000; do
+             sleep 0.1
+          done
           psql postgresql://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DEFAULT_DATABASE} -c "CREATE DATABASE reda;"
       - name: setup py37
         uses: actions/setup-python@v3
