@@ -68,6 +68,7 @@ jobs:
           image: ${{ matrix.image_version }}
       - name: Testing
         run: |
+          kubectl apply -f .ci/kubeconfig.yaml
           kubectl apply -f postgres_crd.yaml
           kubectl apply -f postgresuser_crd.yaml
       - name: setup py37
