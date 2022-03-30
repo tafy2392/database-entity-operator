@@ -71,6 +71,15 @@ jobs:
           kubectl apply -f .ci/kubeconfig.yaml
           kubectl apply -f postgres_crd.yaml
           kubectl apply -f postgresuser_crd.yaml
+      - name: psql test
+        env:
+          POSTGRES_HOST: "127.0.0.1"
+          POSTGRES_DEFAULT_DATABASE: postgres
+          POSTGRES_PASS: somePassword
+          POSTGRES_USER: postgres
+          POSTGRES_PORT: '31000'
+        run: |
+          psql postgresql://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DEFAULT_DATABASE} -c "CREATE DATABASE reda;"
       - name: setup py37
         uses: actions/setup-python@v3
         with:
