@@ -37,36 +37,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_version:
-        - "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
-        - "kindest/node:v1.22.0@sha256:b8bda84bb3a190e6e028b1760d277454a72267a5454b57db34437c34a588d047"
-    services:
-      postgres:
-        image:  postgres:10.8
-        env:
-          POSTGRES_PASSWORD: somePassword
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-        # Set health checks to wait until postgres has started
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        ports:
-        - 5432/tcp
+        kubernetes_version:
+        - '1.19.6'
+        - '1.20.1'
     steps:
       - uses: actions/checkout@v2
       - name: run kopf tests
-        env:
-          POSTGRES_HOST: "127.0.0.1"
-          POSTGRES_DEFAULT_DATABASE: postgres
-          POSTGRES_PASS: somePassword
-          POSTGRES_USER: postgres
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         run: |
           sudo apt-get -y install postgresql-client
-      - uses: engineerd/setup-kind@v0.5.0
+      - name: setup minikube
+        id: minikube
+        uses: manusa/actions-setup-minikube@v2.3.0
         with:
-          version: "v0.11.1"
-          image: ${{ matrix.image_version }}
-          config: .ci/config.yaml
+          minikube version: v1.15.1
+          kubernetes version: v${{ matrix.kubernetes_version }}
       - name: ruru
         run: |
           kubectl cluster-info
@@ -103,6 +87,6 @@ jobs:
           POSTGRES_DEFAULT_DATABASE: postgres
           POSTGRES_PASS: somePassword
           POSTGRES_USER: postgres
-          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+          POSTGRES_PORT: "31000"
         run: |
           tox -e e2e
