@@ -53,6 +53,7 @@ def drop_db():
     connection.autocommit = True
     connection.cursor().execute("DROP DATABASE testfalse")
     connection.close()
+    print("dropped db")
 
 
 def poll_with_timeout(start_time, log_msg=None):

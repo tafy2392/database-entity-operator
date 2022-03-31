@@ -35,6 +35,7 @@ setup(
         "pykube-ng>=20.10.0",
         "asyncio>=3.4.3",
         "asyncpg>=0.25.0",
+        "psycopg2==2.7.7",
     ],
     extras_require={
         "dev": [
