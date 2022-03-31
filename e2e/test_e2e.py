@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import time
 
+import psycopg2  # type: ignore
 import pytest  # type: ignore
 
 from .helpers import kopf_runner, kube_helper
@@ -31,6 +32,27 @@ REMOVED_EXTENSIONS = (
 def kube():
     with kube_helper() as kube:
         yield kube
+
+
+@pytest.fixture()
+def drop_db():
+    """
+    This fixture will be executed after every test
+    where dropOnDelete is false
+    in postgres CR
+    """
+
+    yield
+    connection = psycopg2.connect(
+        dbname="postgres",
+        user="postgres",
+        password="somePassword",
+        host="127.0.0.1",
+        port="31000",
+    )
+    connection.autocommit = True
+    connection.cursor().execute("DROP DATABASE testfalse")
+    connection.close()
 
 
 def poll_with_timeout(start_time, log_msg=None):
@@ -64,7 +86,7 @@ def test_database_create_and_cleanup(caplog, kube):
         wait_for_log(start_time, caplog, SUCCESSFUL_DROP)
 
 
-def test_database_create_and_cleanup_with_false(caplog, kube):
+def test_database_create_and_cleanup_with_false(caplog, kube, drop_db):
     """
     Test with a CR where dropOnDelete is false
     """
