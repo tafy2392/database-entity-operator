@@ -35,6 +35,6 @@ class TestMock(unittest.TestCase):
         )
         yield True
 
-    def test_program(test_conn):
-        # this test is using mocked database connection.
-        assert True
+    def test_program(self, test_conn):
+	    # this test is using mocked database connection.
+	    assert True
