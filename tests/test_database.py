@@ -7,8 +7,8 @@ import pytest  # type: ignore
 
 
 @pytest.fixture(scope="session")
-@asynccontextmanager
 @asyncio.coroutine  # dummy to let tests pass
+@asynccontextmanager
 async def db_connection():
     """
     generate a python conn object

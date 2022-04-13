@@ -1,4 +1,4 @@
-import asyncio  # type: ignore
+import asyncio
 import os
 from contextlib import asynccontextmanager
 from typing import List
