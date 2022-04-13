@@ -27,7 +27,9 @@ async def db_connection():
 
 
 @pytest.fixture(autouse=True)
-def test_conn(mocker, db_connection):
+@pytest.mark.asyncio
+@asyncio.coroutine  # dummy to let tests pass
+async def test_conn(mocker, db_connection):
     mocker.patch(
         "database_operator.databases.PostgresConnection.master_connection",
         db_connection,
