@@ -26,6 +26,7 @@ async def db_connection():
         dbc.close()
 
 
+@pytest.mark.usefixtures("db_connection")
 class TestMock(unittest.TestCase):
     @pytest.fixture
     def test_conn(self, mocker, db_connection):
