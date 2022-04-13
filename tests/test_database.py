@@ -7,7 +7,6 @@ import pytest  # type: ignore
 
 
 @pytest.fixture(scope="session")
-@asyncio.coroutine  # dummy to let tests pass
 @asynccontextmanager
 async def db_connection():
     """
