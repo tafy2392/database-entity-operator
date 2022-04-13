@@ -46,6 +46,7 @@ setup(
             "pytest>=6.1.0",
             "pytest-cov",
             "pytest-mock",
+            "pytest-docker",
             "pytest-asyncio>=0.17.2",
             "pyyaml",
             "types-pyyaml",
