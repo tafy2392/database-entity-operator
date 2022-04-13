@@ -28,7 +28,7 @@ async def db_connection():
 
 @pytest.mark.usefixtures("db_connection")
 class TestMock(unittest.TestCase):
-    @pytest.fixture
+    @pytest.fixture(autouse=True)
     def test_conn(self, mocker, db_connection):
         mocker.patch(
             "database_operator.databases.PostgresConnection.master_connection",
@@ -36,6 +36,6 @@ class TestMock(unittest.TestCase):
         )
         yield True
 
-    def test_program(self, test_conn):
+    def test_program(self):
 	    # this test is using mocked database connection.
 	    assert True
