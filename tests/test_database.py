@@ -38,5 +38,5 @@ def test_conn(mocker, db_connection):
 @pytest.mark.usefixtures("test_conn")
 class TestMock(unittest.TestCase):
     def test_program(self):
-	    # this test is using mocked database connection.
-	    assert True
+        #  this test is using mocked database connection.
+        assert True
