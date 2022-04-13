@@ -8,16 +8,16 @@ import pytest  # type: ignore
 
 @pytest.fixture(scope="session")
 @asynccontextmanager
-async def db_connection():
+async def db_connection(docker_services, docker_ip):
     """
     generate a python conn object
     """
     db_settings = {
         "database": "postgres",
         "user": "postgres",
-        "host": "127.0.0.1",
-        "password": "somePassword",
-        "port": "31000",
+        "host": docker_ip,
+        "password": "",
+        "port": docker_services.port_for("database", 5432),
     }
     dbc = await asyncpg.connect(**db_settings)
     try:
