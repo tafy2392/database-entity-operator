@@ -7,6 +7,19 @@ import pytest  # type: ignore
 
 
 @pytest.fixture(scope="session")
+def http_service(docker_ip, docker_services):
+    """Ensure that HTTP service is up and responsive."""
+
+    # `port_for` takes a container port and returns the corresponding host port
+    port = docker_services.port_for("httpbin", 80)
+    url = "http://{}:{}".format(docker_ip, port)
+    docker_services.wait_until_responsive(
+        timeout=30.0, pause=0.1, check=lambda: is_responsive(url)
+    )
+    return url
+
+
+@pytest.fixture(scope="session")
 @asynccontextmanager
 async def db_connection(docker_services, docker_ip):
     """
@@ -16,7 +29,7 @@ async def db_connection(docker_services, docker_ip):
         "database": "postgres",
         "user": "postgres",
         "host": docker_ip,
-        "password": "somePassword",
+        "password": "",
         "port": docker_services.port_for("database", 5432),
     }
     dbc = await asyncpg.connect(**db_settings)
