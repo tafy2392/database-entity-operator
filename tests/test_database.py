@@ -26,19 +26,12 @@ async def db_connection():
         dbc.close()
 
 
-@pytest.fixture(scope="session")
-@pytest.mark.asyncio
-async def myfunc():
-    async with db_connection() as mytmp:
-        return mytmp
-
-
 class TestMock(unittest.TestCase):
     @pytest.fixture
-    def test_conn(self, mocker, myfunc):
+    def test_conn(self, mocker, db_connection):
         mocker.patch(
             "database_operator.databases.PostgresConnection.master_connection",
-            myfunc,
+            db_connection,
         )
         yield True
 
