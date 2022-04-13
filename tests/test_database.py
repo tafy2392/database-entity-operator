@@ -16,7 +16,7 @@ async def db_connection(docker_services, docker_ip):
         "database": "postgres",
         "user": "postgres",
         "host": docker_ip,
-        "password": "",
+        "password": "somePassword",
         "port": docker_services.port_for("database", 5432),
     }
     dbc = await asyncpg.connect(**db_settings)
