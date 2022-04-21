@@ -36,7 +36,7 @@ class TestPostgresSpec:
         )
 
     def test_postgres_statements_constr_methods(self):
-        assert add_creation("x", "y") == "CREATE y IF NOT EXISTS x"
+        assert add_creation("x", "y") == 'CREATE y IF NOT EXISTS "x"'
         assert (
             drop_items("test", "DATABASE") == 'DROP DATABASE IF EXISTS "test"'
         )
