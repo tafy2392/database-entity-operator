@@ -2,7 +2,12 @@ import asyncio  # type: ignore
 
 import pytest  # type: ignore
 
-from database_operator.databases import PostgresConnection
+from database_operator.databases import (
+    PostgresConnection,
+    add_creation,
+    construct_items_map,
+    drop_items,
+)
 
 test_conn = PostgresConnection(
     "testuser",
@@ -11,6 +16,8 @@ test_conn = PostgresConnection(
     5432,
     "testdefaultdatabase",
 )
+
+EXTENSIONS = ["fuzzstr", "pg_statement"]
 
 
 class TestPostgresSpec:
@@ -27,3 +34,12 @@ class TestPostgresSpec:
             test_conn.connstr("testnewdb")
             == "postgres://testuser:testpassword@testhost:5432/testnewdb"
         )
+
+    def test_postgres_statements_constr_methods(self):
+        assert add_creation("x", "y") == "CREATE y IF NOT EXISTS x"
+        assert (
+            drop_items("test", "DATABASE") == 'DROP DATABASE IF EXISTS "test"'
+        )
+        assert construct_items_map(
+            EXTENSIONS, "POSTGRES_CONSTRUCT", "LOG_MESSAGE"
+        ) == {tuple(EXTENSIONS): ["POSTGRES_CONSTRUCT", "LOG_MESSAGE"]}
