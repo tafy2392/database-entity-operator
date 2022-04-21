@@ -1,4 +1,5 @@
 import asyncio  # type: ignore
+
 import pytest  # type: ignore
 
 from database_operator.databases import PostgresConnection
