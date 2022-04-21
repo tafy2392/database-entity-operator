@@ -1,43 +1,28 @@
 import asyncio  # type: ignore
-import unittest
-from contextlib import asynccontextmanager
-
-import asyncpg  # type: ignore
 import pytest  # type: ignore
 
+from database_operator.databases import PostgresConnection
 
-@pytest.fixture(scope="session")
-@asynccontextmanager
-async def db_connection(docker_services, docker_ip):
-    """
-    generate a python conn object
-    """
-    db_settings = {
-        "database": "postgres",
-        "user": "postgres",
-        "host": docker_ip,
-        "password": "",
-        "port": docker_services.port_for("database", 5432),
-    }
-    dbc = await asyncpg.connect(**db_settings)
-    try:
-        yield dbc
-    finally:
-        dbc.close()
+test_conn = PostgresConnection(
+    "testuser",
+    "testpassword",
+    "testhost",
+    5432,
+    "testdefaultdatabase",
+)
 
 
-@pytest.fixture(autouse=True)
-@pytest.mark.asyncio
-@asyncio.coroutine  # dummy to let tests pass
-async def test_conn(mocker, db_connection):
-    mocker.patch(
-        "database_operator.databases.PostgresConnection.master_connection",
-        side_effect=db_connection,
-    )
-    yield True
-
-
-class TestMock(unittest.TestCase):
-    def test_program(self):
-        #  this test is using mocked database connection.
-        assert True
+class TestPostgresSpec:
+    @pytest.mark.asyncio
+    @asyncio.coroutine  # dummy to let tests pass
+    async def test_postgresconnection(self):
+        assert test_conn.master_user == "testuser"
+        assert test_conn.master_password == "testpassword"
+        assert test_conn.postgres_host == "testhost"
+        assert test_conn.postgres_port == 5432
+        assert test_conn.postgres_default_database == "testdefaultdatabase"
+        assert isinstance(test_conn, object)
+        assert (
+            test_conn.connstr("testnewdb")
+            == "postgres://testuser:testpassword@testhost:5432/testnewdb"
+        )

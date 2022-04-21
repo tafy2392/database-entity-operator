@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from typing import List
 
 import asyncpg  # type: ignore
-import attr
+import attr  # type: ignore
 
 LOG_SUCCESSFUL = "Successfully created {} {} in database {}"
 LOG_ESTABLISH = "Successfully established connection to database {}"
