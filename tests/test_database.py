@@ -24,7 +24,7 @@ EXTENSIONS = ["fuzzstr", "pg_statement"]
 @pytest.fixture(scope="function")
 @pytest.mark.asyncio
 async def database(postgresql_proc):
-    with DatabaseJanitor(
+    async with DatabaseJanitor(
         postgresql_proc.user,
         postgresql_proc.host,
         postgresql_proc.port,
