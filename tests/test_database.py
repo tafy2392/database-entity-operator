@@ -67,5 +67,6 @@ class TestPostgresSpec:
 
     @pytest.mark.usefixtures("database")
     @pytest.mark.asyncio
-    async def test_master_database(self):
+    async def test_master_database(self, master_conn):
         print("damba")
+        assert isinstance(master_conn, object)
