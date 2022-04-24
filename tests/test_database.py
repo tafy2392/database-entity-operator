@@ -22,9 +22,8 @@ EXTENSIONS = ["fuzzstr", "pg_statement"]
 
 
 @pytest.fixture(scope="function")
-@pytest.mark.asyncio
-async def database(postgresql_proc):
-    async with DatabaseJanitor(
+def database(postgresql_proc):
+    with DatabaseJanitor(
         postgresql_proc.user,
         postgresql_proc.host,
         postgresql_proc.port,
@@ -50,10 +49,7 @@ class TestPostgresSpec:
         assert test_conn.master_password == "testpassword"
         assert test_conn.postgres_host == "testhost"
         assert test_conn.postgres_port == 5432
-        assert (
-            test_conn.postgres_default_database
-            == "testdefaultdatabase"
-        )
+        assert test_conn.postgres_default_database == "testdefaultdatabase"
         assert isinstance(test_conn, object)
         assert (
             test_conn.connstr("testnewdb")
@@ -63,14 +59,11 @@ class TestPostgresSpec:
     def test_postgres_statements_constr_methods(self):
         assert add_creation("x", "y") == 'CREATE y IF NOT EXISTS "x"'
         assert (
-            drop_items("test", "DATABASE")
-            == 'DROP DATABASE IF EXISTS "test"'
+            drop_items("test", "DATABASE") == 'DROP DATABASE IF EXISTS "test"'
         )
         assert construct_items_map(
             EXTENSIONS, "POSTGRES_CONSTRUCT", "LOG_MESSAGE"
-        ) == {
-            tuple(EXTENSIONS): ["POSTGRES_CONSTRUCT", "LOG_MESSAGE"]
-        }
+        ) == {tuple(EXTENSIONS): ["POSTGRES_CONSTRUCT", "LOG_MESSAGE"]}
 
     @pytest.mark.usefixtures("database")
     @pytest.mark.asyncio
