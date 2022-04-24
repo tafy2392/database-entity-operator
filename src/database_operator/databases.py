@@ -1,5 +1,4 @@
 import asyncio
-import os
 from contextlib import asynccontextmanager
 from typing import List
 
@@ -46,10 +45,7 @@ class PostgresConnection:
         db_name = self.postgres_default_database
         conn = await asyncpg.connect(self.connstr(db_name))
         try:
-            if not os.environ.get("TEST"):
-                yield conn
-            else:
-                yield None
+            yield conn
         finally:
             await conn.close()
 
@@ -57,10 +53,7 @@ class PostgresConnection:
     async def database_connection(self, database_name):
         conn = await asyncpg.connect(self.connstr(database_name))
         try:
-            if not os.environ.get("TEST"):
-                yield conn
-            else:
-                yield None
+            yield conn
         finally:
             await conn.close()
 

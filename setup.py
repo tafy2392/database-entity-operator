@@ -40,13 +40,13 @@ setup(
     extras_require={
         "dev": [
             "black",
+            "psycopg",
             "flake8",
             "isort",
             "mypy",
             "pytest>=6.1.0",
             "pytest-cov",
-            "pytest-mock",
-            "pytest-docker",
+            "pytest-postgresql",
             "pytest-asyncio>=0.17.2",
             "pyyaml",
             "types-pyyaml",
