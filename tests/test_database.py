@@ -36,7 +36,7 @@ def database(postgresql_proc):
             "secret_password",
             postgresql_proc.host,
             postgresql_proc.port,
-            "my_test_database",
+            "master_test_database",
         )
         yield master_conn
 
@@ -69,4 +69,5 @@ class TestPostgresSpec:
     @pytest.mark.asyncio
     async def test_master_database(self):
         print("damba")
-        assert isinstance(database, object)
+        async with database.master_connection() as conn:
+            await conn.execute('CREATE DATABASE "tanya"')
