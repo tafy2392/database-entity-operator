@@ -6,3 +6,4 @@ asyncpg >= 0.25.0
 tox
 types-PyYAML
 awscli
+real
