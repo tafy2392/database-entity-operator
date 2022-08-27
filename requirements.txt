@@ -5,3 +5,4 @@ asyncio >= 3.4.3
 asyncpg >= 0.25.0
 tox
 types-PyYAML
+awscli
